@@ -53,6 +53,15 @@
       ret)
     obj))
 
+(defn javarify-param [param]
+  (if (map? param)
+    (let [ret (map (fn [[k v]] [(name k) v]) param)
+          java-map (HashMap.)]
+      (doseq [[k v] ret]
+        (.put java-map k v))
+      java-map)
+    param))
+
 (defmacro def-service-method [service-name method-name param-types param-names]
   ;; create service
   (create-service-if-needed service-name)
@@ -67,9 +76,12 @@
                                   [~service-name :methods
                                    ~method-name :param-types])
              service# (get-service ~service-name)
+             ;; javarify param
+             params# [~@param-names-syms]
+             params# (map javarify-param params#)
              result# (.$invoke ^GenericService service# ~method-name
                          (into-array String param-types#)
-                         (into-array Object [~@param-names-syms]))
+                         (into-array Object params#))
              ;; prettify the result
              result# (object->json result#)]
          result#))))
@@ -90,6 +102,7 @@
 ;; def the remote method stub
 (def-service-method "com.alibaba.dubbo.demo.DemoService" "sayHello" ["java.lang.String"] ["name"])
 (def-service-method "com.alibaba.dubbo.demo.DemoService" "findPerson" ["java.lang.String"] ["name"])
+(def-service-method "com.alibaba.dubbo.demo.DemoService" "savePerson" ["com.alibaba.dubbo.demo.Person"] ["p"])
 #_(sayHello "xumingmingv")
 
 
