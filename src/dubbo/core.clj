@@ -55,13 +55,21 @@
        (let [param-types# (get-in @services-atom
                                   [~service-name :methods
                                    ~method-name :param-types])
-             service# (get-service ~service-name)
-             a# (println service#)]
+             service# (get-service ~service-name)]
          (.$invoke ^GenericService service# ~method-name
                          (into-array String param-types#)
                          (into-array Object [~@param-names-syms]))))))
 
 
+(defn list-services
+  "Lists all the dubbo services stub we defined."
+  []
+  (keys @services-atom))
+
+(defn list-service-methods
+  "Lists all the methods of a dubbo services we defined."
+  [service-name]
+  (keys (get-in @services-atom [service-name :methods])))
 
 ;; set the registry
 (set-registry! "127.0.0.1:9090")
