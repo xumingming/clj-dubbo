@@ -62,14 +62,7 @@ public class DemoServiceImpl implements DemoService {
 (def-service-method "com.alibaba.dubbo.demo.DemoService" "sayHello" ["java.lang.String"] ["name"])
 ```
 
-The params are:
-
-*# service name
-*# method name
-*# param types
-*# param names
-
-This will define a function named `sayHello` which accepts a single param named `name` , when you call this function, it will delegate the call to the remote service method: `com.alibaba.dubbo.demo.DemoService#sayHello`
+The params are: service name, method name, param types, param names. This will define a function named `sayHello` which accepts a single param named `name` , when you call this function, it will delegate the call to the remote service method: `com.alibaba.dubbo.demo.DemoService#sayHello`
 
 * Call this remote service method:
 
