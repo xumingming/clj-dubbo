@@ -101,6 +101,7 @@
 (set-registry! "127.0.0.1:9090")
 ;; def the remote method stub
 (def-service-method "com.alibaba.dubbo.demo.DemoService" "sayHello" ["java.lang.String"] ["name"])
+(def-service-method "com.alibaba.dubbo.demo.DemoService" "add" ["int" "int"] ["a" "b"])
 (def-service-method "com.alibaba.dubbo.demo.DemoService" "findPerson" ["java.lang.String"] ["name"])
 (def-service-method "com.alibaba.dubbo.demo.DemoService" "savePerson" ["com.alibaba.dubbo.demo.Person"] ["p"])
 #_(sayHello "xumingmingv")
