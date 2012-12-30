@@ -19,19 +19,25 @@
   [address]
   (reset! registry-atom (create-registry address)))
 
-
-(defn create-service-reference
+(defn create-service-reference0
   "Creates a service instance for the specified service name."
-  [service-name]
+  [registry service-name]
   (let [reference (doto (ReferenceConfig.)
-                    (.setApplication (ApplicationConfig. "generic-consumer"))
+                    (.setApplication (ApplicationConfig. "dubbo.clj"))
                     (.setInterface service-name)
                     (.setGeneric true)
-                    (.setRegistry @registry-atom))]
+                    (.setRegistry registry))]
     reference))
 
+(defn create-service-reference
+  [service-name]
+  (create-service-reference0 @registry-atom service-name))
+
+(defn service-exists? [service-name]
+  (contains? @services-atom service-name))
+
 (defn create-service-if-needed [service-name]
-  (when (not (contains? @services-atom service-name))
+  (when (not (service-exists? service-name))
     (let [reference (create-service-reference service-name)
           service-info {:name service-name
                         :obj reference
@@ -56,7 +62,7 @@
     (doseq [service-name all-service-names]
       (close-service service-name))))
 
-(defn object->json [obj]
+(defn clojurify [obj]
   ;; if its a map, we prettify it:
   ;; 1) string key -> keyword key
   ;; 2) HashMap -> clojure map
@@ -66,7 +72,7 @@
       ret)
     obj))
 
-(defn javarify-param [param]
+(defn javarify [param]
   (if (map? param)
     (let [ret (map (fn [[k v]] [(name k) v]) param)
           java-map (HashMap.)]
@@ -91,12 +97,12 @@
              service# (get-service ~service-name)
              ;; javarify param
              params# [~@param-names-syms]
-             params# (map javarify-param params#)
+             params# (map javarify params#)
              result# (.$invoke ^GenericService service# ~method-name
                          (into-array String param-types#)
                          (into-array Object params#))
              ;; prettify the result
-             result# (object->json result#)]
+             result# (clojurify result#)]
          result#))))
 
 
@@ -109,14 +115,4 @@
   "Lists all the methods of a dubbo services we defined."
   [service-name]
   (keys (get-in @services-atom [service-name :methods])))
-
-;; set the registry
-(set-registry! "127.0.0.1:9090")
-;; def the remote method stub
-(def-service-method "com.alibaba.dubbo.demo.DemoService" "sayHello" ["java.lang.String"] ["name"])
-(def-service-method "com.alibaba.dubbo.demo.DemoService" "add" ["int" "int"] ["a" "b"])
-(def-service-method "com.alibaba.dubbo.demo.DemoService" "findPerson" ["java.lang.String"] ["name"])
-(def-service-method "com.alibaba.dubbo.demo.DemoService" "savePerson" ["com.alibaba.dubbo.demo.Person"] ["p"])
-#_(sayHello "xumingmingv")
-
 
