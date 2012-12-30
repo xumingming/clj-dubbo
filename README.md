@@ -56,7 +56,13 @@ public class DemoServiceImpl implements DemoService {
 }
 ```
 
-* Define a remote service method:
+* First, we need to tell clojure code where the registry is.
+
+``` clojure
+(set-registry! "127.0.0.1:9090")
+```
+
+* Then we define a remote service method:
 
 ``` clojure
 (def-service-method "com.alibaba.dubbo.demo.DemoService" "sayHello" ["java.lang.String"] ["name"])
@@ -64,14 +70,14 @@ public class DemoServiceImpl implements DemoService {
 
 The params are: service name, method name, param types, param names. This will define a function named `sayHello` which accepts a single param named `name` , when you call this function, it will delegate the call to the remote service method: `com.alibaba.dubbo.demo.DemoService#sayHello`
 
-* Call this remote service method:
+* After define the remote service method, we can call the function **just like a normal function**
 
 ``` clojure
 (sayHello "james")
 ;; "Hello james"
 ```
 
-* Call a service method with more than one params.
+* Also supports service method which has multiple params:
 
 ``` clojure
 ;; Just treat it as a function with mutiple params.
@@ -79,7 +85,7 @@ The params are: service name, method name, param types, param names. This will d
 ;; 3
 ```
 
-* Call a service method whose param is a POJO.
+* Also supports service method whose param is a POJO.
 
 ``` clojure
 ;; For service method whose param is a POJO, you just need to treat the param 
@@ -88,7 +94,7 @@ The params are: service name, method name, param types, param names. This will d
 ;; "From server: name:james, age: 12"
 ```
 
-* Call a service method whose return value is a POJO.
+* Also supports service method whose return value is a POJO.
 
 ``` clojure
 ;; the POJO return value will be converted to a clojure map, and the property name 
@@ -97,7 +103,15 @@ The params are: service name, method name, param types, param names. This will d
 ;; {:name "james", :age 20, :class "com.alibaba.dubbo.demo.Person"}
 ```
 
-* Destory the service. TO BE IMPLEMENTED
+* Destory the service. 
+
+``` clojure
+;; close one service
+(close-service "com.alibaba.dubbo.demo.DemoService")
+
+;; close all services
+(close-all-services )
+```
 
 * Define mutilple service methods in one clause. TO BE IMPLEMENTED
 
