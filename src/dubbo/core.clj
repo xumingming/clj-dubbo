@@ -81,7 +81,22 @@
       java-map)
     param))
 
-(defmacro def-service-method [service-name method-name param-types param-names]
+(defmacro def-service-method
+  "Defines a remote service method as local function in current namespace.
+
+  service-name  Full qualified service name. e.g. com.alibaba.dubbo.demo.DemoService
+  method-name   Method name in the service. e.g. sayHello
+  param-types   Parameter types of this method. e.g. [\"java.lang.String\"]
+  param-names   Parameter names of this method. e.g. [\"name\"]
+                This is mainly for call the function conviniently.
+
+  Example:
+    (def-service-method \"com.alibaba.dubbo.demo.DemoService\"
+                        \"sayHello\"
+                        [\"java.lang.String\"]
+                        [\"name\"])
+"
+  [service-name method-name param-types param-names]
   ;; create service
   (create-service-if-needed service-name)
   ;; add the method information into the services-atom
