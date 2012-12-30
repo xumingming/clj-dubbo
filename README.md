@@ -27,12 +27,11 @@ And the implementation is:
 
 ``` java
 package com.alibaba.dubbo.demo.provider;
- 
+
 import com.alibaba.dubbo.demo.DemoService;
 import com.alibaba.dubbo.demo.Person;
  
 public class DemoServiceImpl implements DemoService {
- 
     public String sayHello(String name) {
         return "Hello " + name;
     }
@@ -64,10 +63,11 @@ public class DemoServiceImpl implements DemoService {
 ```
 
 The params are:
-** service name
-** method name
-** param types
-** param names
+
+*# service name
+*# method name
+*# param types
+*# param names
 
 This will define a function named `sayHello` which accepts a single param named `name` , when you call this function, it will delegate the call to the remote service method: `com.alibaba.dubbo.demo.DemoService#sayHello`
 
@@ -79,27 +79,34 @@ This will define a function named `sayHello` which accepts a single param named 
 ```
 
 * Call a service method with more than one params.
-Just treat it as a function with mutiple functions, e.g. following shows how we call the `add` method:
 
 ``` clojure
+;; Just treat it as a function with mutiple params.
 (add 1 2)
 ;; 3
 ```
+
 * Call a service method whose param is a POJO.
-For service method whose param is a POJO, you just need to treat the param as a map in clojure, e.g. following shows how we call the `savePerson` method:
 
 ``` clojure
+;; For service method whose param is a POJO, you just need to treat the param 
+;; as a map in clojure.
 (savePerson {:name "james" :age (int 12)})
 ;; "From server: name:james, age: 12"
 ```
 
 * Call a service method whose return value is a POJO.
-the POJO return value will be converted to a clojure map, and the property name whill be converted to keyword type, e.g. following shows how we call the `findPerson` method:
 
 ``` clojure
+;; the POJO return value will be converted to a clojure map, and the property name 
+;; whill be converted to keyword type.
 (findPerson "james")
 ;; {:name "james", :age 20, :class "com.alibaba.dubbo.demo.Person"}
 ```
+
+* Destory the service. TO BE IMPLEMENTED
+
+* Define mutilple service methods in one clause. TO BE IMPLEMENTED
 
 ## License
 
