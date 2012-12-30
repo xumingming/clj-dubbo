@@ -1,4 +1,5 @@
 (ns dubbo.core
+  (:import [java.util HashMap])
   (:import [com.alibaba.dubbo.config ApplicationConfig
             ReferenceConfig RegistryConfig])
   (:import [com.alibaba.dubbo.rpc.service GenericService]))
@@ -42,6 +43,16 @@
   [service-name]
     (get-in @services-atom [service-name :obj]))
 
+(defn object->json [obj]
+  ;; if its a map, we prettify it:
+  ;; 1) string key -> keyword key
+  ;; 2) HashMap -> clojure map
+  (if (instance? HashMap obj)
+    (let [ret (map (fn [[k v]] [(keyword k) v]) obj)
+          ret (into {} ret)]
+      ret)
+    obj))
+
 (defmacro def-service-method [service-name method-name param-types param-names]
   ;; create service
   (create-service-if-needed service-name)
@@ -55,10 +66,13 @@
        (let [param-types# (get-in @services-atom
                                   [~service-name :methods
                                    ~method-name :param-types])
-             service# (get-service ~service-name)]
-         (.$invoke ^GenericService service# ~method-name
+             service# (get-service ~service-name)
+             result# (.$invoke ^GenericService service# ~method-name
                          (into-array String param-types#)
-                         (into-array Object [~@param-names-syms]))))))
+                         (into-array Object [~@param-names-syms]))
+             ;; prettify the result
+             result# (object->json result#)]
+         result#))))
 
 
 (defn list-services
@@ -75,6 +89,7 @@
 (set-registry! "127.0.0.1:9090")
 ;; def the remote method stub
 (def-service-method "com.alibaba.dubbo.demo.DemoService" "sayHello" ["java.lang.String"] ["name"])
+(def-service-method "com.alibaba.dubbo.demo.DemoService" "findPerson" ["java.lang.String"] ["name"])
 #_(sayHello "xumingmingv")
 
 
