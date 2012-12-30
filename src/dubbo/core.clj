@@ -81,6 +81,13 @@
       java-map)
     param))
 
+(defn add-service-method
+  [services-atom service-name method-name param-types]
+    ;; add the method information into the services-atom
+  (swap! services-atom assoc-in
+         [service-name :methods method-name]
+         {:param-types param-types}))
+
 (defmacro def-service-method
   "Defines a remote service method as local function in current namespace.
 
@@ -99,10 +106,9 @@
   [service-name method-name param-types param-names]
   ;; create service
   (create-service-if-needed service-name)
-  ;; add the method information into the services-atom
-  (swap! services-atom assoc-in
-         [service-name :methods method-name]
-         {:param-types param-types})
+  ;; add the method info
+  (add-service-method services-atom service-name method-name param-types)
+  ;; define the local function stub
   (let [method-name-sym (symbol method-name)
         param-names-syms (map symbol param-names)]
     `(defn ~method-name-sym [~@param-names-syms]
