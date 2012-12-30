@@ -6,6 +6,7 @@
 
 (def ^{} registry-atom (atom nil))
 (def ^{} services-atom (atom {}))
+(declare list-services)
 
 (defn create-registry
   "Creates a dubbo registry with the specified address."
@@ -18,22 +19,22 @@
   [address]
   (reset! registry-atom (create-registry address)))
 
-(defn create-service
+
+(defn create-service-reference
   "Creates a service instance for the specified service name."
   [service-name]
   (let [reference (doto (ReferenceConfig.)
                     (.setApplication (ApplicationConfig. "generic-consumer"))
                     (.setInterface service-name)
                     (.setGeneric true)
-                    (.setRegistry @registry-atom))
-        service (.get reference)]
-    service))
+                    (.setRegistry @registry-atom))]
+    reference))
 
 (defn create-service-if-needed [service-name]
   (when (not (contains? @services-atom service-name))
-    (let [service (create-service service-name)
+    (let [reference (create-service-reference service-name)
           service-info {:name service-name
-                        :obj service
+                        :obj reference
                         :methods {}}]
       ;; put service into cache
       (swap! services-atom assoc-in [service-name] service-info))))
@@ -41,7 +42,19 @@
 (defn get-service
   "Gets a service instance for the specified full-quantified service name"
   [service-name]
-    (get-in @services-atom [service-name :obj]))
+    (.get (get-in @services-atom [service-name :obj])))
+
+(defn close-service [service-name]
+  (let [service-reference (get-in @services-atom [service-name :obj])]
+    ;; close the service reference
+    (.destroy service-reference)
+    ;; remove it from the service-atom
+    (swap! services-atom dissoc service-name)))
+
+(defn close-all-services []
+  (let [all-service-names (list-services)]
+    (doseq [service-name all-service-names]
+      (close-service service-name))))
 
 (defn object->json [obj]
   ;; if its a map, we prettify it:
