@@ -56,6 +56,24 @@
              result# (clojurify result#)]
          result#))))
 
+(defmacro def-service
+  "Defines a service.
+
+  This will define a stub of the remote Dubbo service.
+  e.g.
+
+  (def-service \"com.alibaba.dubbo.demo.DemoService\" [
+      [\"sayHello\" [\"java.lang.String\"] [\"name\"]]
+      [\"add\" [\"int\" \"int\"] [\"a\" \"b\"]]
+    ]) "
+  [service-name methods]
+  (for [method methods]
+    (let [method-name (first method)
+          method-param-types (second method)
+          method-param-names (nth method 2)]
+      `(def-service-method ~service-name
+        ~method-name [~@method-param-types]
+        [~@method-param-names]))))
 
 (defn list-services
   "Lists all the dubbo services stub we defined."

@@ -69,6 +69,17 @@ public class DemoServiceImpl implements DemoService {
 
 The params are: service name, method name, param types, param names. This will define a function named `sayHello` which accepts a single param named `name` , when you call this function, it will delegate the call to the remote service method: `com.alibaba.dubbo.demo.DemoService#sayHello`
 
+* You can also define multiple methods in one form:
+
+``` clojure
+(def-service "com.alibaba.dubbo.demo.DemoService" [
+    ["sayHello" ["java.lang.String"] ["name"]]
+    ["add" ["int" "int"] ["a" "b"]]
+    ["findPerson" ["java.lang.String"] ["name"]]
+    ["savePerson" ["com.alibaba.dubbo.demo.Person"] ["p"]]
+  ])
+```
+
 * After define the remote service method, we can call the function **just like a normal function**
 
 ``` clojure
