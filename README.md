@@ -123,8 +123,6 @@ The params are: service name, method name, param types, param names. This will d
 (close-all-services )
 ```
 
-* Define mutilple service methods in one clause. TO BE IMPLEMENTED
-
 ## License
 
 Copyright (C) 2012 xumingming
