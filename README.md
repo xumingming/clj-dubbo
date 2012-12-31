@@ -113,6 +113,7 @@ The params are: service name, method name, param types, param names. This will d
 ;; {:name "james", :age 20, :class "com.alibaba.dubbo.demo.Person"}
 ```
 
+* Specify the service version. TO BE IMPLEMENTED
 * Destory the service. 
 
 ``` clojure
