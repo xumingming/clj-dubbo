@@ -114,7 +114,12 @@
 
 (defn javarify [param]
   (if (map? param)
-    (let [ret (map (fn [[k v]] [(name k) v]) param)
+    (let [ret (map (fn [[k v]]
+                     (let [new-k (name k)
+                           new-v (if (map? v)
+                                   (javarify v)
+                                   v)]
+                       [new-k new-v])) param)
           java-map (HashMap.)]
       (doseq [[k v] ret]
         (.put java-map k v))

@@ -27,7 +27,7 @@
 (deftest test-create-service-reference0
   (let [registry (create-registry "127.0.0.1:9090")
         service-name "com.test.DemoService"
-        reference (create-service-reference0 registry service-name)]
+        reference (create-service-reference0 registry service-name "1.0.0")]
     (is (not (nil? reference)))
     (is (= service-name (.getInterface reference)))
     (is (= "true" (.getGeneric reference)))))
@@ -41,4 +41,5 @@
 (deftest test-javarify
   (is (= 1 (javarify 1)))
   (is (= "hello" (javarify "hello")))
-  (is (= {:name "james" :age 21} (clojurify (javarify {:name "james" :age 21})))))
+  (is (= {:name "james" :age 21} (clojurify (javarify {:name "james" :age 21}))))
+  (is (= {:name "james" :age 21 :inner {"test" 1}} (clojurify (javarify {:name "james" :age 21 :inner {"test" 1}})))))
