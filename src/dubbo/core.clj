@@ -33,9 +33,9 @@
                         [\"java.lang.String\"]
                         [\"name\"])
 "
-  [service-name method-name param-types param-names]
+  [service-name version method-name param-types param-names]
   ;; create service
-  (create-service-if-needed service-name)
+  (create-service-if-needed service-name version)
   ;; add the method info
   (add-service-method services-atom service-name method-name param-types)
   ;; define the local function stub
@@ -71,7 +71,8 @@
     (let [method-name (first method)
           method-param-types (second method)
           method-param-names (nth method 2)]
-      `(def-service-method ~service-name
+      ;; FIXME fix the 1.0.0 hardcode
+      `(def-service-method ~service-name "1.0.0"
         ~method-name [~@method-param-types]
         [~@method-param-names]))))
 
@@ -87,18 +88,19 @@
 
 (defn create-service-reference0
   "Creates a service instance for the specified service name."
-  [registry service-name]
+  [registry service-name version]
   (let [reference (doto (ReferenceConfig.)
                     (.setApplication (ApplicationConfig. "dubbo.clj"))
                     (.setInterface service-name)
                     (.setGeneric true)
+                    (.setVersion version)
                     (.setRegistry registry))]
     reference))
 
 (defn create-service-reference
   "Creates a dubbo service reference."
-  [service-name]
-  (create-service-reference0 @registry-atom service-name))
+  [service-name version]
+  (create-service-reference0 @registry-atom service-name version))
 
 (defn clojurify [obj]
   ;; if its a map, we prettify it:
@@ -152,9 +154,9 @@
 (defn service-exists? [service-name]
   (contains? @services-atom service-name))
 
-(defn create-service-if-needed [service-name]
+(defn create-service-if-needed [service-name version]
   (when (not (service-exists? service-name))
-    (let [reference (create-service-reference service-name)
+    (let [reference (create-service-reference service-name version)
           service-info {:name service-name
                         :obj reference
                         :methods {}}]
