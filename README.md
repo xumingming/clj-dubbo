@@ -72,7 +72,7 @@ The params are: `service name`, `service version`, `method name`, `param types`,
 * You can also define multiple methods in one form:
 
 ``` clojure
-(def-service "com.alibaba.dubbo.demo.DemoService" [
+(def-service "com.alibaba.dubbo.demo.DemoService" "1.0.0" [
     ["sayHello" ["java.lang.String"] ["name"]]
     ["add" ["int" "int"] ["a" "b"]]
     ["findPerson" ["java.lang.String"] ["name"]]

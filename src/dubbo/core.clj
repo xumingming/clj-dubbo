@@ -22,13 +22,14 @@
   "Defines a remote service method as local function in current namespace.
 
   service-name  Full qualified service name. e.g. com.alibaba.dubbo.demo.DemoService
+  version       Version of the service to use.
   method-name   Method name in the service. e.g. sayHello
   param-types   Parameter types of this method. e.g. [\"java.lang.String\"]
   param-names   Parameter names of this method. e.g. [\"name\"]
                 This is mainly for call the function conviniently.
 
   Example:
-    (def-service-method \"com.alibaba.dubbo.demo.DemoService\"
+    (def-service-method \"com.alibaba.dubbo.demo.DemoService\" \"1.0.0\"
                         \"sayHello\"
                         [\"java.lang.String\"]
                         [\"name\"])
