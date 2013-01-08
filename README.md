@@ -1,4 +1,4 @@
-## dubbo.clj
+## clj-dubbo
 
 call [Dubbo](https://github.com/alibaba/dubbo) service in clojure.
 
